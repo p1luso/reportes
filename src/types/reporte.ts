@@ -1,5 +1,8 @@
 export type TipoReporte = 'diario' | 'semanal' | 'incidente' | 'auditoria';
 
+// Acepta cualquier string del payload externo; se normaliza a TipoReporte internamente
+export type TipoReporteInput = TipoReporte | string;
+
 export interface ReporteInput {
   tipo_reporte: TipoReporte;
   fecha: string;           // ISO date string: "YYYY-MM-DD"
