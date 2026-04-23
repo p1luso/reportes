@@ -57,8 +57,8 @@ export default async function DashboardPage() {
             <span className="shrink-0 gradient-header text-amber-400 text-[10px] font-black uppercase tracking-widest px-4 py-1 mr-4">
               LATEST
             </span>
-            <div className="overflow-hidden flex-1">
-              <div className="animate-ticker flex whitespace-nowrap">
+            <div className="overflow-hidden flex-1 min-w-0">
+              <div className="animate-ticker flex whitespace-nowrap w-max">
                 {tickerItems.map((r, i) => (
                   <span key={`${r.id}-${i}`} className="flex items-center gap-3 pr-10">
                     <span className="text-[10px] font-black uppercase tracking-wider text-amber-700">{r.tipo_reporte}</span>
