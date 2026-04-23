@@ -1,10 +1,10 @@
 import type { Reporte, TipoReporte } from '@/types/reporte';
 
-const TYPE_CONFIG: Record<TipoReporte, { label: string; border: string; text: string; bg: string }> = {
-  diario:    { label: 'DAILY BRIEF',   border: 'border-t-amber-400',  text: 'text-amber-400',  bg: 'bg-amber-400/10' },
-  semanal:   { label: 'WEEKLY WRAP',   border: 'border-t-cyan-400',   text: 'text-cyan-400',   bg: 'bg-cyan-400/10'  },
-  incidente: { label: 'BREAKING',      border: 'border-t-red-500',    text: 'text-red-500',    bg: 'bg-red-500/10'   },
-  auditoria: { label: 'AUDIT REPORT',  border: 'border-t-violet-400', text: 'text-violet-400', bg: 'bg-violet-400/10'},
+const TYPE_CONFIG: Record<TipoReporte, { label: string; border: string; text: string; tag: string }> = {
+  diario:    { label: 'DAILY BRIEF',  border: 'border-t-amber-400',  text: 'text-amber-600',  tag: 'bg-amber-100  text-amber-700'  },
+  semanal:   { label: 'WEEKLY WRAP',  border: 'border-t-cyan-500',   text: 'text-cyan-700',   tag: 'bg-cyan-100   text-cyan-800'   },
+  incidente: { label: 'BREAKING',     border: 'border-t-red-500',    text: 'text-red-600',    tag: 'bg-red-100    text-red-700'    },
+  auditoria: { label: 'AUDIT REPORT', border: 'border-t-violet-500', text: 'text-violet-700', tag: 'bg-violet-100 text-violet-800' },
 };
 
 interface Props {
@@ -24,16 +24,15 @@ export default function ReporteCard({ reporte, featured = false }: Props) {
     <article className={`
       relative flex flex-col gap-4 overflow-hidden
       border-t-4 ${cfg.border}
-      bg-zinc-900 hover:bg-zinc-800
-      transition-colors duration-200
+      bg-white shadow-sm hover:shadow-md
+      transition-shadow duration-200
       ${featured ? 'p-8 rounded-2xl' : 'p-5 rounded-xl'}
     `}>
 
-      {/* Ghost number watermark */}
+      {/* Ghost watermark */}
       <span aria-hidden className={`
-        pointer-events-none absolute right-4 bottom-2 select-none font-black tabular-nums
-        text-white/[0.04]
-        ${featured ? 'text-[120px] leading-none' : 'text-[72px] leading-none'}
+        pointer-events-none absolute right-3 bottom-1 select-none font-black tabular-nums text-black/[0.04]
+        ${featured ? 'text-[110px] leading-none' : 'text-[68px] leading-none'}
       `}>
         {reporte.id.slice(0, 4).toUpperCase()}
       </span>
@@ -45,18 +44,18 @@ export default function ReporteCard({ reporte, featured = false }: Props) {
             {cfg.label}
           </span>
           {isToday && (
-            <span className="flex items-center gap-1 text-[10px] font-bold text-red-500 uppercase tracking-wider">
+            <span className="flex items-center gap-1 text-[10px] font-bold text-red-600 uppercase tracking-wider">
               <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse-dot" />
               LIVE
             </span>
           )}
         </div>
-        <time className="text-[10px] text-zinc-500 shrink-0">{fecha}</time>
+        <time className="text-[10px] text-stone-400 shrink-0">{fecha}</time>
       </div>
 
       {/* Resumen */}
       <p className={`
-        font-bold leading-tight text-white
+        font-bold leading-tight text-zinc-900
         ${featured ? 'text-2xl line-clamp-4' : 'text-sm line-clamp-3'}
       `}>
         {reporte.resumen_ejecutivo}
@@ -68,26 +67,22 @@ export default function ReporteCard({ reporte, featured = false }: Props) {
           {reporte.puntos_clave.slice(0, featured ? 5 : 3).map((punto, i) => (
             <li key={i} className="flex items-start gap-2.5">
               <span className={`mt-[5px] h-1.5 w-1.5 shrink-0 rounded-full ${cfg.text.replace('text-', 'bg-')}`} />
-              <span className="text-xs text-zinc-400 leading-relaxed">{punto}</span>
+              <span className="text-xs text-stone-500 leading-relaxed">{punto}</span>
             </li>
           ))}
         </ul>
       )}
 
-      {/* Footer */}
+      {/* Links */}
       {reporte.links_fuente.length > 0 && (
-        <div className={`flex flex-wrap gap-1.5 pt-3 border-t border-zinc-800 mt-auto`}>
+        <div className="flex flex-wrap gap-1.5 pt-3 border-t border-stone-100 mt-auto">
           {reporte.links_fuente.map((link, i) => (
             <a
               key={i}
               href={link}
               target="_blank"
               rel="noopener noreferrer"
-              className={`
-                truncate max-w-[180px] rounded px-2 py-1
-                text-[10px] font-medium tracking-wide uppercase
-                ${cfg.bg} ${cfg.text} hover:opacity-80 transition-opacity
-              `}
+              className={`truncate max-w-[180px] rounded px-2 py-1 text-[10px] font-semibold uppercase tracking-wide hover:opacity-70 transition-opacity ${cfg.tag}`}
             >
               {link.replace(/^https?:\/\//, '').split('/')[0]}
             </a>

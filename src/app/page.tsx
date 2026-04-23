@@ -5,11 +5,11 @@ import type { TipoReporte } from '@/types/reporte';
 
 export const revalidate = 60;
 
-const STATS_CONFIG: Record<TipoReporte, { label: string; color: string }> = {
-  diario:    { label: 'Daily',     color: 'text-amber-400'  },
-  semanal:   { label: 'Weekly',    color: 'text-cyan-400'   },
-  incidente: { label: 'Incidents', color: 'text-red-500'    },
-  auditoria: { label: 'Audits',    color: 'text-violet-400' },
+const STATS_CONFIG: Record<TipoReporte, { label: string; color: string; ring: string }> = {
+  diario:    { label: 'Daily',     color: 'text-amber-500',  ring: 'ring-amber-200'  },
+  semanal:   { label: 'Weekly',    color: 'text-cyan-600',   ring: 'ring-cyan-200'   },
+  incidente: { label: 'Incidents', color: 'text-red-500',    ring: 'ring-red-200'    },
+  auditoria: { label: 'Audits',    color: 'text-violet-600', ring: 'ring-violet-200' },
 };
 
 const TODAY = new Date().toLocaleDateString('es-ES', {
@@ -25,52 +25,47 @@ export default async function DashboardPage() {
   );
 
   const [featured, ...rest] = reportes;
-
-  // Ticker: duplicate content so the loop is seamless
-  const tickerItems = reportes.length > 0
-    ? [...reportes, ...reportes]
-    : null;
+  const tickerItems = reportes.length > 0 ? [...reportes, ...reportes] : null;
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white font-sans">
+    <div className="min-h-screen bg-stone-100 text-zinc-900 font-sans">
 
-      {/* ── Masthead ── */}
-      <header className="border-b-2 border-white/10 px-6 pt-8 pb-4">
+      {/* ── Masthead (oscuro, contraste) ── */}
+      <header className="bg-zinc-950 px-6 pt-7 pb-5">
         <div className="mx-auto max-w-6xl">
-          <div className="flex items-end justify-between gap-4 mb-1">
-            <h1 className="text-4xl sm:text-6xl font-black tracking-[-0.04em] uppercase leading-none">
-              The Tech<br className="sm:hidden" />{' '}
-              <span className="text-amber-400">Gazette</span>
+          <div className="flex items-end justify-between gap-4 mb-2">
+            <h1 className="text-4xl sm:text-6xl font-black tracking-[-0.04em] uppercase leading-none text-white">
+              The Tech <span className="text-amber-400">Gazette</span>
             </h1>
-            <div className="text-right hidden sm:block">
-              <p className="text-[10px] text-zinc-500 uppercase tracking-[0.15em]">Edición digital</p>
-              <p className="text-[10px] text-zinc-400 font-mono mt-0.5">{TODAY}</p>
-            </div>
+            <p className="hidden sm:block text-right text-[10px] text-zinc-500 font-mono leading-relaxed">
+              {TODAY}<br />
+              <span className="text-zinc-600">{reportes.length} entradas · ISR 60s</span>
+            </p>
           </div>
-          <p className="text-[10px] text-zinc-500 uppercase tracking-[0.25em] mt-2">
-            Reportes técnicos en tiempo real — {reportes.length} entradas totales
+          <p className="text-[10px] text-zinc-600 uppercase tracking-[0.25em]">
+            Reportes técnicos en tiempo real
           </p>
         </div>
       </header>
 
-      {/* ── Ticker ── */}
+      {/* ── Ticker (amarillo vibrante) ── */}
       {tickerItems && (
-        <div className="border-b border-zinc-800 bg-zinc-900 overflow-hidden py-2.5">
-          <div className="flex items-center gap-0">
-            <span className="shrink-0 bg-amber-400 text-black text-[10px] font-black uppercase tracking-widest px-3 py-1 mr-4">
+        <div className="bg-amber-400 overflow-hidden py-2">
+          <div className="flex items-center">
+            <span className="shrink-0 bg-zinc-950 text-amber-400 text-[10px] font-black uppercase tracking-widest px-3 py-1 mr-4">
               LATEST
             </span>
             <div className="overflow-hidden flex-1">
-              <div className="animate-ticker flex gap-0 whitespace-nowrap">
+              <div className="animate-ticker flex whitespace-nowrap">
                 {tickerItems.map((r, i) => (
-                  <span key={`${r.id}-${i}`} className="flex items-center gap-3 pr-12">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+                  <span key={`${r.id}-${i}`} className="flex items-center gap-3 pr-10">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-amber-700">
                       {r.tipo_reporte}
                     </span>
-                    <span className="text-xs text-zinc-300">
-                      {r.resumen_ejecutivo.slice(0, 80)}{r.resumen_ejecutivo.length > 80 ? '…' : ''}
+                    <span className="text-xs font-medium text-zinc-900">
+                      {r.resumen_ejecutivo.slice(0, 75)}{r.resumen_ejecutivo.length > 75 ? '…' : ''}
                     </span>
-                    <span className="text-zinc-700">◆</span>
+                    <span className="text-amber-600">◆</span>
                   </span>
                 ))}
               </div>
@@ -81,16 +76,16 @@ export default async function DashboardPage() {
 
       <main className="mx-auto max-w-6xl px-6 py-8 flex flex-col gap-8">
 
-        {/* ── Stats bar ── */}
-        <section className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-zinc-800 border border-zinc-800 rounded-xl overflow-hidden">
+        {/* ── Stats ── */}
+        <section className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {(Object.keys(STATS_CONFIG) as TipoReporte[]).map(tipo => {
             const cfg = STATS_CONFIG[tipo];
             return (
-              <div key={tipo} className="bg-zinc-950 px-5 py-4">
+              <div key={tipo} className={`bg-white rounded-xl p-5 ring-1 ${cfg.ring} shadow-sm`}>
                 <p className={`text-3xl font-black tabular-nums leading-none ${cfg.color}`}>
                   {totales[tipo] ?? 0}
                 </p>
-                <p className="text-[10px] uppercase tracking-[0.15em] text-zinc-500 mt-1.5">
+                <p className="text-[10px] uppercase tracking-[0.15em] text-stone-400 mt-1.5">
                   {cfg.label}
                 </p>
               </div>
@@ -98,34 +93,28 @@ export default async function DashboardPage() {
           })}
         </section>
 
-        {/* ── Content ── */}
+        {/* ── Contenido ── */}
         {reportes.length === 0 ? (
           <EmptyState />
         ) : (
           <>
-            {/* Featured */}
             {featured && (
               <section>
                 <div className="flex items-center gap-3 mb-3">
-                  <span className="h-px flex-1 bg-zinc-800" />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-600">
-                    Top Story
-                  </span>
-                  <span className="h-px flex-1 bg-zinc-800" />
+                  <span className="h-px flex-1 bg-stone-300" />
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400">Top Story</span>
+                  <span className="h-px flex-1 bg-stone-300" />
                 </div>
                 <ReporteCard reporte={featured} featured />
               </section>
             )}
 
-            {/* Grid */}
             {rest.length > 0 && (
               <section>
                 <div className="flex items-center gap-3 mb-3">
-                  <span className="h-px flex-1 bg-zinc-800" />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-600">
-                    All Reports
-                  </span>
-                  <span className="h-px flex-1 bg-zinc-800" />
+                  <span className="h-px flex-1 bg-stone-300" />
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400">All Reports</span>
+                  <span className="h-px flex-1 bg-stone-300" />
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {rest.map(r => <ReporteCard key={r.id} reporte={r} />)}
@@ -136,15 +125,10 @@ export default async function DashboardPage() {
         )}
       </main>
 
-      {/* ── Footer ── */}
-      <footer className="border-t border-zinc-900 px-6 py-6 mt-4">
+      <footer className="border-t border-stone-200 px-6 py-5 mt-4">
         <div className="mx-auto max-w-6xl flex items-center justify-between">
-          <span className="text-[10px] font-black tracking-[0.2em] uppercase text-zinc-700">
-            The Tech Gazette
-          </span>
-          <span className="text-[10px] text-zinc-700 font-mono">
-            ISR · revalidate 60s
-          </span>
+          <span className="text-[10px] font-black tracking-[0.2em] uppercase text-stone-400">The Tech Gazette</span>
+          <span className="text-[10px] text-stone-300 font-mono">ISR · revalidate 60s</span>
         </div>
       </footer>
     </div>
